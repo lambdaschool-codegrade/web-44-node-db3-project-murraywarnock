@@ -2,7 +2,7 @@ const db = require("../../data/db-config");
 // const knex = require("knex");
 
 
-function find() { // EXERCISE A
+const find = async () => { // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
     What happens if we change from a LEFT join to an INNER join?
@@ -20,7 +20,7 @@ function find() { // EXERCISE A
     Return from this function the resulting dataset.
   */
   try {
-    return db('schemes as sc')
+    return await db('schemes as sc')
       .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
       .select(
         db.raw('sc.*, COUNT(st.step_id) as number_of_steps')
@@ -32,7 +32,7 @@ function find() { // EXERCISE A
   }
 }
 
-function findById(scheme_id) { // EXERCISE B
+const findById = async scheme_id => { // EXERCISE B
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
@@ -98,6 +98,16 @@ function findById(scheme_id) { // EXERCISE B
         "steps": []
       }
   */
+   try {
+    return await db('schemes as sc')
+      .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
+      .select('sc.scheme_name, st.*')
+      .where('sc.scheme_id', '=', scheme_id)
+      .orderBy('sc.scheme_id ');
+
+  } catch (error) {
+    return (error);
+  }
 }
 
 function findSteps(scheme_id) { // EXERCISE C
@@ -121,6 +131,16 @@ function findSteps(scheme_id) { // EXERCISE C
         }
       ]
   */
+  try {
+    return db('schemes as sc')
+      .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
+      .select('sc.scheme_name, st.*')
+      .where('sc.scheme_id', '=', scheme_id)
+      .orderBy('sc.scheme_id ');
+
+  } catch (error) {
+    return (error);
+  }
 }
 
 function add(scheme) { // EXERCISE D
