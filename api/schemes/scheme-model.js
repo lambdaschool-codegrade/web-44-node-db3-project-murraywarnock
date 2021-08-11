@@ -1,5 +1,5 @@
 const db = require("../../data/db-config");
-const knex = require("knex");
+// const knex = require("knex");
 
 
 function find() { // EXERCISE A
@@ -19,7 +19,7 @@ function find() { // EXERCISE A
     2A- When you have a grasp on the query go ahead and build it in Knex.
     Return from this function the resulting dataset.
   */
-  // try {
+  try {
     return db('schemes as sc')
       .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
       .select(
@@ -27,10 +27,9 @@ function find() { // EXERCISE A
         )
       .groupBy('sc.scheme_id')
       .orderBy('sc.scheme_id ');
-  //     return schemes;
-  // } catch (error) {
-  //   return (error);
-  // }
+  } catch (error) {
+    return (error);
+  }
 }
 
 function findById(scheme_id) { // EXERCISE B
