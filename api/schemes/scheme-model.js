@@ -2,7 +2,7 @@ const db = require("../../data/db-config");
 // const knex = require("knex");
 
 
-const find = async () => { // EXERCISE A
+const find =  () => { // EXERCISE A
   /*
     1A- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`.
     What happens if we change from a LEFT join to an INNER join?
@@ -20,11 +20,10 @@ const find = async () => { // EXERCISE A
     Return from this function the resulting dataset.
   */
   try {
-    return await db('schemes as sc')
+    return db('schemes as sc')
       .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
-      .select(
-        db.raw('sc.*, COUNT(st.step_id) as number_of_steps')
-        )
+      .select('sc.*')
+      .count('st.step_id as number_of_steps')
       .groupBy('sc.scheme_id')
       .orderBy('sc.scheme_id ');
   } catch (error) {
@@ -32,7 +31,7 @@ const find = async () => { // EXERCISE A
   }
 }
 
-const findById = async scheme_id => { // EXERCISE B
+async function findById(scheme_id) { // EXERCISE B
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
@@ -98,16 +97,27 @@ const findById = async scheme_id => { // EXERCISE B
         "steps": []
       }
   */
-   try {
-    return await db('schemes as sc')
+    const rows = await db('schemes as sc')
       .leftJoin('steps as st', 'sc.scheme_id', '=', 'st.scheme_id')
-      .select('sc.scheme_name, st.*')
+      .select('st.*', 'sc.scheme_name', 'sc.scheme_id')
       .where('sc.scheme_id', '=', scheme_id)
-      .orderBy('sc.scheme_id ');
-
-  } catch (error) {
-    return (error);
-  }
+      .orderBy('st.step_number');
+    
+    const result = {
+      scheme_id: rows[0].scheme_id,
+      scheme_name: rows[0].scheme_name,
+      steps: []
+    }
+    rows.forEach(row => {
+      if(row.step_id) {
+        result.steps.push({
+          step_id: row.step_id,
+          step_number: row.step_number,
+          instructions: row.instructions
+        })
+      }
+    })
+    return result;
 }
 
 function findSteps(scheme_id) { // EXERCISE C
